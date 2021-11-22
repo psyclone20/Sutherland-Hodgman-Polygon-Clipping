@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <graphics.h>
 
-int points[80][2] = { { 0 } }, new[80][2] = { { 0 } };
+int points[80][2] = { { 0 } }, nw[80][2] = { { 0 } };
 
 int leftClip(int, int);
 int topClip(int, int);
@@ -43,6 +43,7 @@ int main() {
 		line(points[i][0], points[i][1], points[(i + 1) % result][0],
 				points[(i + 1) % result][1]);
 
+    getch();
 	return 0;
 }
 
@@ -56,31 +57,32 @@ int leftClip(int limit, int xmin) {
 		y2 = points[(i + 1) % limit][1];
 		if (x2 - x1)
 			m = (y2 - y1) * 1.0 / (x2 - x1);
-
+        else
+            m = 0;
 		if (x1 < xmin && x2 < xmin)
 			continue;
-		if (x1 > xmin && x2 > xmin) {
-			new[j][0] = x2;
-			new[j++][1] = y2;
+		if (x1 >= xmin && x2 >= xmin) {
+			nw[j][0] = x2;
+			nw[j++][1] = y2;
 			continue;
 		}
-		if (x1 > xmin && x2 < xmin) {
-			new[j][0] = xmin;
-			new[j++][1] = y1 + m * (xmin - x1);
+		if (x1 >= xmin && x2 < xmin) {
+			nw[j][0] = xmin;
+			nw[j++][1] = y1 + m * (xmin - x1);
 			continue;
 		}
-		if (x1 < xmin && x2 > xmin) {
-			new[j][0] = xmin;
-			new[j++][1] = y1 + m * (xmin - x1);
-			new[j][0] = x2;
-			new[j++][1] = y2;
+		if (x1 < xmin && x2 >= xmin) {
+			nw[j][0] = xmin;
+			nw[j++][1] = y1 + m * (xmin - x1);
+			nw[j][0] = x2;
+			nw[j++][1] = y2;
 		}
 	}
 
 	for (i = 0; i < j; i++) {
-		points[i][0] = new[i][0];
-		points[i][1] = new[i][1];
-		new[i][0] = new[i][1] = 0;
+		points[i][0] = nw[i][0];
+		points[i][1] = nw[i][1];
+		nw[i][0] = nw[i][1] = 0;
 	}
 
 	if (j < limit)
@@ -100,31 +102,33 @@ int topClip(int limit, int ymin) {
 		y2 = points[(i + 1) % limit][1];
 		if (x2 - x1)
 			m = (y2 - y1) * 1.0 / (x2 - x1);
+        else
+            m = 0;
 
 		if (y1 < ymin && y2 < ymin)
 			continue;
-		if (y1 > ymin && y2 > ymin) {
-			new[j][0] = x2;
-			new[j++][1] = y2;
+		if (y1 >= ymin && y2 >= ymin) {
+			nw[j][0] = x2;
+			nw[j++][1] = y2;
 			continue;
 		}
-		if (y1 > ymin && y2 < ymin) {
-			new[j][0] = x1 + (ymin - y1) / m;
-			new[j++][1] = ymin;
+		if (y1 >= ymin && y2 < ymin) {
+			nw[j][0] = x1 + (ymin - y1) / m;
+			nw[j++][1] = ymin;
 			continue;
 		}
-		if (y1 < ymin && y2 > ymin) {
-			new[j][0] = x1 + (ymin - y1) / m;
-			new[j++][1] = ymin;
-			new[j][0] = x2;
-			new[j++][1] = y2;
+		if (y1 < ymin && y2 >= ymin) {
+			nw[j][0] = x1 + (ymin - y1) / m;
+			nw[j++][1] = ymin;
+			nw[j][0] = x2;
+			nw[j++][1] = y2;
 		}
 	}
 
 	for (i = 0; i < j; i++) {
-		points[i][0] = new[i][0];
-		points[i][1] = new[i][1];
-		new[i][0] = new[i][1] = 0;
+		points[i][0] = nw[i][0];
+		points[i][1] = nw[i][1];
+		nw[i][0] = nw[i][1] = 0;
 	}
 
 	if (j < limit)
@@ -144,31 +148,33 @@ int rightClip(int limit, int xmax) {
 		y2 = points[(i + 1) % limit][1];
 		if (x2 - x1)
 			m = (y2 - y1) * 1.0 / (x2 - x1);
+        else
+            m = 0;
 
 		if (x1 > xmax && x2 > xmax)
 			continue;
-		if (x1 < xmax && x2 < xmax) {
-			new[j][0] = x2;
-			new[j++][1] = y2;
+		if (x1 <= xmax && x2 <= xmax) {
+			nw[j][0] = x2;
+			nw[j++][1] = y2;
 			continue;
 		}
-		if (x1 < xmax && x2 > xmax) {
-			new[j][0] = xmax;
-			new[j++][1] = y1 + m * (xmax - x1);
+		if (x1 <= xmax && x2 > xmax) {
+			nw[j][0] = xmax;
+			nw[j++][1] = y1 + m * (xmax - x1);
 			continue;
 		}
-		if (x1 > xmax && x2 < xmax) {
-			new[j][0] = xmax;
-			new[j++][1] = y1 + m * (xmax - x1);
-			new[j][0] = x2;
-			new[j++][1] = y2;
+		if (x1 > xmax && x2 <= xmax) {
+			nw[j][0] = xmax;
+			nw[j++][1] = y1 + m * (xmax - x1);
+			nw[j][0] = x2;
+			nw[j++][1] = y2;
 		}
 	}
 
 	for (i = 0; i < j; i++) {
-		points[i][0] = new[i][0];
-		points[i][1] = new[i][1];
-		new[i][0] = new[i][1] = 0;
+		points[i][0] = nw[i][0];
+		points[i][1] = nw[i][1];
+		nw[i][0] = nw[i][1] = 0;
 	}
 
 	if (j < limit)
@@ -188,31 +194,33 @@ int bottomClip(int limit, int ymax) {
 		y2 = points[(i + 1) % limit][1];
 		if (x2 - x1)
 			m = (y2 - y1) * 1.0 / (x2 - x1);
+        else
+            m = 0;
 
 		if (y1 > ymax && y2 > ymax)
 			continue;
-		if (y1 < ymax && y2 < ymax) {
-			new[j][0] = x2;
-			new[j++][1] = y2;
+		if (y1 <= ymax && y2 <= ymax) {
+			nw[j][0] = x2;
+			nw[j++][1] = y2;
 			continue;
 		}
-		if (y1 < ymax && y2 > ymax) {
-			new[j][0] = x1 + (ymax - y1) / m;
-			new[j++][1] = ymax;
+		if (y1 <= ymax && y2 > ymax) {
+			nw[j][0] = x1 + (ymax - y1) / m;
+			nw[j++][1] = ymax;
 			continue;
 		}
-		if (y1 > ymax && y2 < ymax) {
-			new[j][0] = x1 + (ymax - y1) / m;
-			new[j++][1] = ymax;
-			new[j][0] = x2;
-			new[j++][1] = y2;
+		if (y1 > ymax && y2 <= ymax) {
+			nw[j][0] = x1 + (ymax - y1) / m;
+			nw[j++][1] = ymax;
+			nw[j][0] = x2;
+			nw[j++][1] = y2;
 		}
 	}
 
 	for (i = 0; i < j; i++) {
-		points[i][0] = new[i][0];
-		points[i][1] = new[i][1];
-		new[i][0] = new[i][1] = 0;
+		points[i][0] = nw[i][0];
+		points[i][1] = nw[i][1];
+		nw[i][0] = nw[i][1] = 0;
 	}
 
 	if (j < limit)
